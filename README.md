@@ -1,6 +1,6 @@
 # Duckly
 
-Duckly is Ruby gem that enables developers to interact with D.Labs Duck
+Duckly is Ruby gem and library that enables developers to interact with D.Labs Duck
 
 ## Installation
 

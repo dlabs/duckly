@@ -24,7 +24,7 @@ describe Duckly do
 
   context "has some methods", :vcr do
     subject { Duckly.new }
-    it { should respond_to :tickets, :me }
+    it { should respond_to :tickets, :me, :add_hours }
 
   #  it { Duckly.new(credentials).me["Skype"].should match /zverchi/i }
   #  it { (d = Duckly.new(credentials)).tickets("utelier").should be_kind_of Array }

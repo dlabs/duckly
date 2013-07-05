@@ -45,7 +45,7 @@ class Duckly
   class SecurityError < StandardError; end
 
   def me
-    self.class.no_follow(false)
+    self.class.no_follow false
     response = self.class.get "/me"
 
     doc = Nokogiri::HTML(response)
@@ -62,7 +62,7 @@ class Duckly
   end
 
   def tickets query
-    self.class.no_follow(true)
+    self.class.no_follow true
 
     params = { body: { jsonrpc: "2.0", method: "tickets.find", params: [query], id: 999 }.to_json }
 
@@ -70,4 +70,44 @@ class Duckly
 
     Oj.load(response.body)["result"] rescue []
   end
+
+  # d.add_hours "jira://local/Utelier/ticket/12865/UT-215", "30", "2013-07-05", "Hacking"
+  def add_hours ticket_url, worktime, date, comment
+    self.class.no_follow true
+
+    params = { body: { action: 'saveActivity',
+      ticketUri:       ticket_url,
+      time:            worktime,
+      started:         date,
+      comment:         comment.strip,
+      publishComment:  0
+    } }
+
+    response = self.class.post("/activities/submit", params)
+    response.body.strip == ""
+  end
+
+  def my_flow offset=0
+    self.class.no_follow true
+
+    response = self.class.get "/activities/my-flow", {
+      headers: { "X-Requested-With" => "XMLHttpRequest" },
+      query: { paging_offset: offset }
+    }
+
+    doc = Nokogiri::HTML(response)
+
+    infos = doc.xpath("//div[@class='info']").map do |div_info|
+      {
+        "ticket-name" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='ticket']/a").first.content.strip,
+        "project-name" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='project']/a").first.content.strip,
+        "time-worked" => div_info.xpath("span[@class='time-worked']").first.content.strip,
+        "project-url" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='project']/a").first["href"],
+        "ticket-uri" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='ticket']/a").first["ref"],
+        "ticket-url" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='ticket']/a").first["href"],
+        "activity-date" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='activity-date']").first.content.strip
+      }
+    end
+  end
+
 end
