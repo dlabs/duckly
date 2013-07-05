@@ -1,6 +1,6 @@
 # Duckly
 
-TODO: Write a gem description
+Duckly is Ruby gem that enables developers to interact with D.Labs Duck
 
 ## Installation
 
@@ -16,9 +16,17 @@ Or install it yourself as:
 
     $ gem install duckly
 
-## Usage
+## Developement
 
-TODO: Write usage instructions here
+Create .env file with following settings
+
+    DUCK_UID=your.username@dlabs.si
+    DUCK_PWD=... you password ...
+
+Run RSpec. First time you run RSpec, VCR will record interaction with API in your behalf.
+So that next time you'll run it developement process will be faster and more efficient
+
+    rspec
 
 ## Contributing
 
