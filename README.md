@@ -16,6 +16,19 @@ Or install it yourself as:
 
     $ gem install duckly
 
+## How to use Duckly?
+
+  duck = Duckly.new uid: "your.username@dlabs.si", pwd: "password"
+
+  # List off my current activity flow
+  duck.my_flow
+
+  # Searching for projects and tickets
+  duck.tickets "project"
+
+  # Adding hours to project
+  duck.add_hours "jira://local/client/ticket/12345/CT-999", "30", "2013-07-05", "Hacking"
+
 ## Developement
 
 Create .env file with following settings
@@ -27,6 +40,11 @@ Run RSpec. First time you run RSpec, VCR will record interaction with API in you
 So that next time you'll run it developement process will be faster and more efficient
 
     rspec
+
+For REPL "testing" please use provided pry.sh script. The script loads credentials and initializes
+ne instance of Duckly class in object called "duck".
+
+    ./pry.sh
 
 ## Contributing
 
