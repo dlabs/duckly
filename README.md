@@ -18,19 +18,19 @@ Or install it yourself as:
 
 ## How to use Duckly?
 
-  duck = Duckly.new uid: "your.username@dlabs.si", pwd: "password"
+    duck = Duckly.new uid: "your.username@dlabs.si", pwd: "password"
 
 List off my current activity flow
 
-  duck.my_flow
+    duck.my_flow
 
 Searching for projects and tickets
 
-  duck.tickets "project"
+    duck.tickets "project"
 
 Adding hours to project
 
-  duck.add_hours "jira://local/client/ticket/12345/CT-999", "30", "2013-07-05", "Hacking"
+    duck.add_hours "jira://local/client/ticket/12345/CT-999", "30", "2013-07-05", "Hacking"
 
 ## Developement
 
