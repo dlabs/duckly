@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+$:.unshift(File.join(File.dirname(__FILE__), "/../lib"))
+
+require "optparse"
+require "pp"
+require 'duckly'
+
+class Duckly::Ticket
+  def to_s; self.summary+"\n"+self.uri+"\n\n"; end
+end
+
+class Duckly::FlowActivity
+  def to_s
+    self["activity-date"]+" - "+self["time-worked"]+" - "+self["ticket-name"]+"\n"+
+    self["ticket-uri"]+"\n\n"
+  end
+end
+
+### Reading config
+
+begin
+  config = File.readlines("#{Dir.home}/.duck")
+rescue Exception => e
+  puts "Please create file '#{Dir.home}/.duck' with your settings!"
+  exit 1
+end
+
+### Parsing config
+
+def parse_config config
+  config.map!(&:strip)
+  Hash[ config.collect { |v| v.split("=").map(&:strip) } ]
+end
+
+config = parse_config(config) rescue nil
+
+if config.nil?
+  puts "Error parsing config file!"
+  exit 1
+end
+
+### Initializing object
+
+duck = Duckly.new uid: config["DUCK_UID"], pwd: config["DUCK_PWD"]
+
+### Executing
+
+output = case ARGV.first
+when "me"
+  duck.me.map { |key, value| "#{key} #{value}" }
+when "my_flow"
+  duck.my_flow
+when "tickets"
+  duck.tickets(ARGV[1].to_s.strip)
+end
+
+puts output

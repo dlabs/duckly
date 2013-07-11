@@ -68,7 +68,9 @@ class Duckly
 
     response = self.class.post "/api/", params
 
-    Oj.load(response.body)["result"] rescue []
+    tickets = Oj.load(response.body)["result"] rescue []
+
+    tickets.map {|t| Ticket.new(t) }
   end
 
   # d.add_hours "jira://local/Utelier/ticket/12865/UT-215", "30", "2013-07-05", "Hacking"
@@ -108,6 +110,13 @@ class Duckly
         "activity-date" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='activity-date']").first.content.strip
       }
     end
+
+    infos.map { |a| FlowActivity.new(a) }
   end
 
+end
+
+class Duckly
+  class Ticket < OpenStruct; end
+  class FlowActivity < OpenStruct; end
 end
