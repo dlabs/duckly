@@ -89,7 +89,7 @@ class Duckly
     response.body.strip == ""
   end
 
-  def my_flow offset=0
+  def my_flow offset=0, activities=5
     self.class.no_follow true
 
     response = self.class.get "/activities/my-flow", {
@@ -99,16 +99,21 @@ class Duckly
 
     doc = Nokogiri::HTML(response)
 
-    infos = doc.xpath("//div[@class='info']").map do |div_info|
-      {
-        "ticket-name" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='ticket']/a").first.content.strip,
-        "project-name" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='project']/a").first.content.strip,
-        "time-worked" => div_info.xpath("span[@class='time-worked']").first.content.strip,
-        "project-url" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='project']/a").first["href"],
-        "ticket-uri" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='ticket']/a").first["ref"],
-        "ticket-url" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='ticket']/a").first["href"],
-        "activity-date" => div_info.xpath("//div[@class='info']").first.xpath("span[@class='activity-date']").first.content.strip
-      }
+    infos = []
+
+    doc.css("div.activity").each_with_index do |activity, index|
+      if index < activities
+        infos << {
+          "ticket-name" => activity.css("div.info span.ticket").first.content.strip.gsub(/,/, ''),
+          "time-worked" => activity.css("div.info span.time-worked").first.content.strip,
+          "project-name" => activity.css("div.info span.project").first.content.strip.gsub(/,/, ''),
+          "ticket-url" => activity.css("div.info span.ticket a").first[:href],
+          "ticket-uri" => activity.css("div.info span.ticket a").first[:ref],
+          "activity-date" => activity.css("div.info span.activity-date").first.content.strip,
+          "comment" => activity.css("div.comments p.comment").first.content,
+          "date" => activity[:ref][5..-1]
+        }
+      end
     end
 
     infos.map { |a| FlowActivity.new(a) }
