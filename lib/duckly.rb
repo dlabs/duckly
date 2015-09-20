@@ -89,7 +89,7 @@ class Duckly
     response.body.strip == ""
   end
 
-  def my_flow offset=0, activities=5, last_day=Date.today.to_s
+  def my_flow offset=0, activities=5, last_day=Date.tomorrow.to_s
     self.class.no_follow true
 
     response = self.class.get "/activities/my-flow?where_last_date=#{last_day}", {
